@@ -1,13 +1,21 @@
+body {
+  background-color: #4D4D4D;
+  padding: 70px;
+}
+
 h1 {
   font-family: Courier;
+  color: #e5e6e8;
 }
 
 h2 {
   font-family: Courier;
+  color: #e5e6e8;
 }
 
 p {
   font-family: Courier;
+  color: #e5e6e8;
 }
 
 .link {
