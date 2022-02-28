@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html>
+<!--This is the title-->
   <link rel="stylesheet" href="custom.css">
   <h1>Week 5 Lab: Mobile Malware Analysis [THM]</h1>
 
+  
+<!-----------------------------------------TASK 1----------------------------------------->
   <h2>Task 1: Introduction</h2>
   <p>Mobile devices are just as powerful as PCs and just as vulnerable too. We’re gonna learn about securing our mobile devices and how     to analyze malware.</p>
 
+  
+<!-----------------------------------------TASK 2----------------------------------------->
   <h2>Task 2: An Unknown Land</h2>
   <p>This task focuses on researching mobile malware. I used google to answer the questions.</p>
     <img src="Images/Lab 5/Task 2--part 1.png" alt="task 2.1" class="center"/>
@@ -17,27 +22,112 @@
   <p><b>What message did it show on the screen of the infected mobile phone?</b>    Caribe</p>
   <p>Task Completed!</p>
 
-  <h2>Task 3: Small Size, A Lot Of Destruction.<h2>
-    <p>I started the windows machine for this task in order to analyze a suspicious file. After a couple minutes the MobSF application launched and I dragged and dropped the suspicious file to be analyzed:</p>
+  
+<!-----------------------------------------TASK 3----------------------------------------->
+  <h2>Task 3: Small Size, A Lot Of Destruction.</h2>
+  <p>I started the windows machine for this task in order to analyze a suspicious file. After a couple minutes the MobSF application launched and I dragged and dropped the suspicious file to be analyzed:</p>
     <img src="Images/Lab 5/Task 3--part 1.png" alt="task 3.1" class="center"/>
-    <p><b>What is the format of the file?</b>    .apk</p>
-    <p>In order to decode the file name I searched “decode filename online” on Google and clicked the first link to see if it was helpful. After playing around with the tool option which is the decoding method, the Base64 Encoder/Decoder option provided this display:</p>
+  <p><b>What is the format of the file?</b>    .apk</p>
+  <p>In order to decode the file name I searched “decode filename online” on Google and clicked the first link to see if it was helpful. After playing around with the tool option which is the decoding method, the Base64 Encoder/Decoder option provided this display:</p>
     <img src="Images/Lab 5/Task 3--part 2.png" alt="task 3.2" class="center"/>
-    <p></p>
-
-    <h2>Task 4: Digging Deeper</h2>
-
-    <h2>Task 5: MobSFing The Sample</h2>
-
-
-    <h2>Task 6: It Doesn't Smell Good!</h2>
+  <p><b>Decode the name of the sample.</b>    Malware</p>
+  <p>To answer the next question I knew that .apk files are for android devices.</p>
+  <p><b>Which is the target platform?</b>    Android</p>
+  <p>Task Completed!</p>
 
 
-    <h2>Task 7: Conclusion</h2>
+<!-----------------------------------------TASK 4----------------------------------------->
+  <h2>Task 4: Digging Deeper</h2>
+  <p>To dig deeper into the analysis we have to make a file hash and input it into VirusTotal. I used the command ‘Get-FileHash [filename]’ and got the SHA256 hash for the file:</p>
+    <img src="Images/Lab 5/Task 4--part 1.png" alt="task 4.1" class="center"/>
+  <p>Here are the results in VirusTotal:</p>
+    <img src="Images/Lab 5/Task 4--part 2.png" alt="task 4.2" class="center"/>
+  <p><b>What does Avast-Mobile tell us about this software?</b>    Android:Metasploit-G [PUP]</p>
+  <p>Details/Android Info/Summary section:</p>
+    <img src="Images/Lab 5/Task 4--part 3.png" alt="task 4.3" class="center"/>
+  <p><b>What program was used to create the malware?</b>    Metasploit</p>
+  <p><b>What is the package name?</b>    Com.metasploit.stage</p>
+  <p>Details/Basic Properties section:</p>
+    <img src="Images/Lab 5/Task 4--part 4.png" alt="task 4.4" class="center"/>
+  <p><b>What is the SHA-1 signature?</b>    74d442594acf11dc6e3492ffea5eb8956afd000d</p>
+  <p>Relations/Bundled Files:</p>
+    <img src="Images/Lab 5/Task 4--part 5.png" alt="task 4.5" class="center"/>
+  <p><b>What is the unique XML file?</b>    Androidmanifest.xml</p>
+  <p>Details/Android Info/Permissions section:</p>
+    <img src="Images/Lab 5/Task 4--part 6.png" alt="task 4.6" class="center"/>
+  <p><b>How many permissions are there inside?</b>    22</p>
+  <p><b>Which permission allows the application to take pictures with the camera?</b>    android.permission.CAMERA</p>
+  <p>Community section:</p>
+    <img src="Images/Lab 5/Task 4--part 7.png" alt="task 4.7" class="center"/>
+  <p><b>What is the message left by the community?</b>    THM{V1ru5-T0t4al-TWFsd2FyZS1BbmFseXNpcw}</p>
+  <p>Task Completed!</p>
 
-    <p>I now have a better understanding of what can be exploited on mobile devices with more sources to dig even deeper.</p>
+  
+<!-----------------------------------------TASK 5----------------------------------------->
+  <h2>Task 5: MobSFing The Sample</h2>
+  <p>For this task we go back to MobSF to answer the provided questions.</p>
+  <p>In the Android API section:</p>
+    <img src="Images/Lab 5/Task 5--part 1.png" alt="task 5.1" class="center"/>
+  <p><b>What is the programming language used to create the program?</b>    Java</p>
+  <p>Signer Certificate section:</p>
+    <img src="Images/Lab 5/Task 5--part 2.png" alt="task 5.2" class="center"/>
+  <p><b>How many signatures does the package have?</b>    1</p>
+  <p>In the section below the certificate is the answer to the next question:</p>
+    <img src="Images/Lab 5/Task 5--part 3.png" alt="task 5.3" class="center"/>
+  <p><b>Application is signed with the v1 signature scheme, what is it vulnerable to on Android <7.0?</b>    Janus</p>
+  <p>Then I looked at the App Information at the top of the page:</p>
+    <img src="Images/Lab 5/Task 5--part 4.png" alt="task 5.4" class="center"/>
+  <p><b>What is the App name?</b>    MainActivity</p>
+  <p>Then I looked at the Android API section again as it had a file used to ‘Get Installed Applications’. I clicked on the ‘Payload.java’ file to try and answer the next question:</p>
+    <img src="Images/Lab 5/Task 5--part 5.png" alt="task 5.5" class="center"/>
+  <p><b>It looks like  there is a function calling for the package manager, so it can see all the installed applications. What function is that?</b>    b.getPackageManager</p>
+  <p>Then we return to the Static Analysis and the Manifest Analysis section:</p>
+    <img src="Images/Lab 5/Task 5--part 6.png" alt="task 5.6" class="center"/>
+  <p><b>The flag "android:allowBackup" allows the user to backup application data via USB debugging. It is recommended that this be set as "False", even if by default it is "True".</b></p>
+  <p><b>What is the severity of this configuration?</b>    medium</p>
+  <p>Task Completed?</p>
+  
+  
+<!-----------------------------------------TASK 6----------------------------------------->
+  <h2>Task 6: It Doesn't Smell Good!</h2>
+  <p>Now we’ll be analyzing the file ‘sample2.apk’. So I analyzed the file in MobSF to try and answer the questions and get a better look at the file’s intentions. </p>
+    <img src="Images/Lab 5/Task 6--part 1.png" alt="task 5.1" class="center"/>
+  <p><b>What is the SHA-256 hash of the file?</b>    Bd8cda80aaee3e4a17e9967a1c062ac5c8e4aefd7eaa3362f54044c2c94db52a</p>
+  <p>Then back to VirusTotal:</p>
+    <img src="Images/Lab 5/Task 6--part 2.png" alt="task 5.2" class="center"/>
+  <p><b>After finding the sample on VirusTotal, what does the “Avast” anti-virus engine recognize it as?</b>    Android:Obfus-BM [Trj]</p>
+  <p>Then I went to the Details tab to figure out the next question:</p>
+    <img src="Images/Lab 5/Task 6--part 3.png" alt="task 5.3" class="center"/>
+  <p><b>With what we have, try to find out the name of the sample.</b>    Pegasus</p>
+  <p>This is a pretty old malware that became news for spying journalists so to figure out what year this was I went to good ‘ol Google. I searched ‘Pegasus spyware history’ and skimmed the <a href="https://en.wikipedia.org/wiki/Pegasus_(spyware)" title="Wiki" class="link">Wikipedia</a> page. It was first developed in 2011 but wasn’t revealed until 2017 at the Security Analyst Summit after Google researchers discovered the android malware.</p>
+  <p><b>This became news for spying journalists, what year was that?</b>    2017</p>
+  <p>Then I searched for ‘pegasus’ on MITRE ATT&CK to answer the next question.</p>
+    <img src="Images/Lab 5/Task 6--part 4.png" alt="task 5.4" class="center"/>
+  <p><b>What is the ID of MITRE ATT&CK that is associated with our sample?</b>    S0316</p>
+  <p>Then I looked at the techniques the malware uses to escalate privileges:</p>
+    <img src="Images/Lab 5/Task 6--part 5.png" alt="task 5.5" class="center"/>
+  <p><b>What technique has the ability to exploit OS vulnerabilities to escalate privileges?</b>    T1404</p>
+  <p>Now I headed back to MobSF to answer some more questions. First, I looked at the ‘Permissions’ section:</p>
+    <img src="Images/Lab 5/Task 6--part 6.png" alt="task 5.6" class="center"/>
+  <p><b>There is a permission that, when accepted, allows the application to access the list of accounts in the Accounts Service. What is the status shown by MobSF regarding this permission? (android.permission.GET.ACCOUNTS)</b>    dangerous</p>
+  <p>I then went to the ‘Files’ section:</p>
+    <img src="Images/Lab 5/Task 6--part 7.png" alt="task 5.7" class="center"/>
+  <p><b>What org.eclipse.paho.client file refers to properties of Portuguese from Brazil (pt-br)?</b>    dangerous</p>
+  <p>For the last question they ask for a way to identify a certain feature of pegasus.apk. I was able to find a feature relating to the question as well as an identifier in the ‘NIAP Analysis’ section:</p>
+    <img src="Images/Lab 5/Task 6--part 8.png" alt="task 5.8" class="center"/>
+  <p><b>The malware has a special appeal for its safety and its internal components, reducing the risk of compromise. It has a functionality for its cryptographic operations with the feature of a random bit generation service. How can it be identified?</b>    FCS_RBG_EXT.1.1</p>
+  <p>Task Completed!</p>
+
+  
+<!-----------------------------------------TASK 7----------------------------------------->
+  <h2>Task 7: Conclusion</h2>
+
+  <p>I now have a better understanding of what can be exploited on mobile devices with more sources to dig even deeper.</p>
 
   <p>Room Completed!</p>
+  
+  <br>
+  <br>
 
   <p><a href="index.html" title="Home" class="link">Back to Home</a></p>
   
