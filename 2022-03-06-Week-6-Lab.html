@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<!--This is the title-->
+  <link rel="stylesheet" href="custom.css">
+  <h1>Week 6 Lab: Encryption -- Crypto 101 [THM]</h1>
+
+  
+<!-----------------------------------------TASK 1----------------------------------------->
+  <h2>Task 1: What will this room cover?</h2>
+    <img src="Images/Lab 6/Task 1.png" alt="task 1" class="center"/>
+  
+  
+<!-----------------------------------------TASK 2----------------------------------------->
+  <h2>Task 2: Key Terms</h2>
+  <p>For this task I glossed over the key terms for this room, and agreed to not complain too much which might be a struggle but I powered through.</p>
+  <p>Also, to answer the question SSH keys are protected with a <b>passphrase.</b></p>
+  
+  
+<!-----------------------------------------TASK 3----------------------------------------->
+  <h2>Task 3: Why is Encryption Important?</h2>
+  <p>Encryption is used to keep all our information private and inaccessible (for the most part) from threat actors! Now after reading their material we can answer their questions.</p>
+  <p><b>What does SSH stand for?</b>    Secure Shell</p>
+  <p>[This answer can be looked up if not already known.]</p>
+  <p><b>How do web servers prove their identity?</b>    Certificates</p>
+  <p><b>What is the main set of standards you need to comply with if you store or process payment card details?</b>    PCI-DSS</p>
+  <p>Task Completed!</p>
+  
+  
+<!-----------------------------------------TASK 4----------------------------------------->
+  <h2>Task 4: Crucial Crypto Maths</h2>
+  <p>Math is the foundation of cryptography and so in this task we do exactly that. Math.</p>
+  <p><b>What’s 30 % 5?</b>    0</p>
+  <p>[30 is divisible by 5 with no remainder.]</p>
+  <p><b>What’s 25 % 7?</b>    4</p>
+  <p>[Seven times three equals 21 with a remainder of 4 to get to 25.]</p>
+  <p><b>What’s 118613842 % 9091?</b>    3565</p>
+  <p>[118613842 divided by 9091 is ~13047.39 so it’s apparent that it will have a remainder. If you just multiply 9091 by 13047 and subtract the total from 118613842 you’ll get 3565 as the remainder.]</p>
+  <p>Task Completed!</p>
+    
+    
+<!-----------------------------------------TASK 5----------------------------------------->
+  <h2>Task 5: Types of Encryption</h2>
+  <p>The main types of encryption are symmetric and asymmetric where each has their strength and weakness. Symmetric encryption uses the same encrypt and decrypt key while asymmetric uses a different key for each.</p>
+  <p><b>Should you trust DES? [Yea/Nay]</b>    Nay</p>
+  <p>DES is only 56 bits long, which is too short to be considered secure.<p>
+  <p><b>What was the result of the attempt to make DES more secure so that it could be used for longer?</b>    Triple DES</p>
+  <p>Since DES was able to be brute-forced to provide the keys, it was proposed to tweak the encryption algorithm with three 56-bit keys making it not as susceptible to brute-force attacks. Here’s an <a href="https://www.techtarget.com/searchsecurity/tip/Expert-advice-Encryption-101-Triple-DES-explained" title="Triple DES" class="link">article</a> describing Triple DES.</p>
+  <p><b>Is it ok to share your public key? [Yea/Nay]</b>    Yea</p>
+  <p>When encrypting information asymmetrically you have to be able to decrypt the data so sharing your public key enables others to view the information you’ve sent/shared. You do not want to share your private key as someone can impersonate you.</p>
+  <p>Task Completed!</p>
+    
+    
+<!-----------------------------------------TASK 6----------------------------------------->
+  <h2>Task 6: RSA - Rivest Shamir Adleman</h2>
+  <p>RSA is an algorithm that generates public/private keys and is commonly used in CTF challenges. After reading this section there is a question:</p>
+  <p><b>p = 4391, q = 6659. What is n?</b>    29239669</p>
+  <p>The variable n is calculated by getting the product of p and q which are given.<p>
+  <p>After learning about RSA and the variables we can continue. Task Completed!</p>
+    
+    
+<!-----------------------------------------TASK 7----------------------------------------->
+  <h2>Task 7: Establishing Keys Using Asymmetric Cryptography</h2>
+  <p>Asymmetric encryption can be used for establishing symmetric encryption for faster communication. That was it for this task.</p>
+    
+    
+<!-----------------------------------------TASK 8----------------------------------------->
+  <h2>Task 8: Digital Signatures and Certificates</h2>
+  <p>While users can encrypt/decrypt information between users with public/private keys, websites use certificates to verify their identity.</p>
+  <p><b>Who is TryHackMe’s HTTPS certificate issued by?</b>    R3</p>
+  <p>THM’s certificate can be accessed by clicking on the lock symbol by the URL and selecting ‘More Information’. Another window titled ‘Page Info’ should provide an option to ‘View Certificate’. Once selected you can view who issued the certificate:</p>
+    <img src="Images/Lab 6/Task 8.png" alt="task 8" class="center"/>
+  <p>Task Completed!</p>
+    
+    
+<!-----------------------------------------TASK 9----------------------------------------->
+  <h2>Task 9: SSH Authentication</h2>
+  <p>SSH is used to securely connect to a computer with an authentication key and is the focus of this task. 
+To give this topic hands-on usage I started up a VM and downloaded the SSH Private Key provided.</p>
+  <p>I then opened the file in notepad.</p>
+  <p><b>What algorithm does the key use?</b>    RSA</p>
+  <p>[This can also be seen in the file name which was idrsa.id_rsa]</p>
+  <p>In order to crack the passphrase for the provided key, I copied the RSA file to the kali VM and used John The Ripper’s SSH algorithm to provide a hash of the private key:</p>
+  <img src="Images/Lab 6/Task 9--part 1.png" alt="task 9.1" class="center"/>
+  <p>Then I ran it against the rockyou wordlist provided in the VM using John The Ripper:</p>
+  <img src="Images/Lab 6/Task 9--part 2.png" alt="task 9.2" class="center"/>
+  <p><b>Crack the password with John The Ripper and rockyou, what’s the passphrase for the key?</b>    Delicious</p>
+  <p>Task Completed!</p>
+    
+    
+<!-----------------------------------------TASK 10----------------------------------------->
+  <h2>Task 10: Explaining Diffie Hellman Key Exchange</h2>
+  <p>This task just briefly discusses the mentioned key exchange as an alternate of the process discussed in Task 7.</p>
+    
+    
+<!-----------------------------------------TASK 11----------------------------------------->
+  <h2>Task 11: PGP, GPG, and AES</h2>
+  <p>This task discusses PGP, it’s open source alternative GPG, and AES, the more secure version of DES with longer keys.</p>
+  <p>This task also provided a gpg zip file for us to decrypt the message. I first downloaded the file to the kali VM on THM and imported the provided key:</p>
+  <img src="Images/Lab 6/Task 10.png" alt="task 11.1" class="center"/>
+  <p>Then by decrypting the message and viewing the file:</p>
+  <img src="Images/Lab 6/Task 10--part 2.png" alt="task 11.2" class="center"/>
+  <p><b>What’s the secret word?</b>    Pineapple</p>
+  <p>Task Completed!</p>
+    
+    
+<!-----------------------------------------TASK 12----------------------------------------->
+  <h2>Task 12: The Future -- Quantum Computers and Encryption</h2>
+  <p>After reading how quantum computers are the apocalypse for cryptography as some of these methods we’ve learned about will be obsolete, we’ve completed the room!</p>
+  
+  <br>
+  <br>
+
+  <p><a href="index.html" title="Home" class="link">Back to Home</a></p>
+  
+</html>
