@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<!--This is the title-->
+  <link rel="stylesheet" href="custom.css">
+  <h1>Week 9 Lab: Startup [THM]</h1>
+  
+<!-----------------------------------------Reconnaissance/Q1----------------------------------------->
+  <h2>Task 1: Welcome to Spice Hut!</h2>
+    <p>The objective of this room is to access the company Spice Hut’s machine to see what information is vulnerable to unauthorized access and if we can obtain root access.</p>
+  <h3>Nmap</h3>
+    <p>The first step to try and gain access is to see what ports are available and see if any common ports are open to be exploited. We know the IP for one of the company’s machines so I decided to run nmap.</p>
+      <code>nmap -A -T4 $IP</code>
+    <p>-A  ; gives a comprehensive description of the open ports and the versions of their services as well as the OS to help find possible exploits specific for what is available.</p>
+    <p>-T4 ; just makes nmap run faster.</p>
+      <img src="Images/Lab 9/nmap results.png" alt="img 1" class="center"/>
+  <h3>FTP [21]</h3>
+    <p>So from this scan I can see that FTP is open and anonymous login is allowed. Hopefully we can view the files that are listed or even discover new files with important information. </p>
+      <code>ftp $IP</code>
+      <img src="Images/Lab 9/connect to target w ftp.png" alt="img 2" class="center"/>
+    <p>Once logged in I downloaded the files with mget so I could view them but there was no information besides a possible name for a user: Maya.</p>
+  <h3>HTTP [80]</h3>
+    <p>The next open port is for SSH but it’d be easier to try and see if they have a webpage because of the open port for HTTP. When I put the IP in Firefox I found a website under development.</p>
+      <img src="Images/Lab 9/access web page.png" alt="img 3" class="center"/>
+  <h3>Gobuster</h3>
+    <p>A good way to see any other pages that aren’t readily visible but are commonly used is to run gobuster.</p>
+      <code>gobuster dir -e -u http://$IP -w /usr/share/wordlists/dirb/common.txt</code>
+    <p>-e ; prints the full URLs of the discovered paths</p>
+    <p>-u ; the target (URL, domain, or IP)</p>
+    <p>-w ; wordlist chosen to find common subdomains, directories, files</p>
+      <img src="Images/Lab 9/gobuster results.png" alt="img 4" class="center"/>
+    <p>Index.html is just the homepage that is shown when I put the IP in the URL bar, which has no important information.</p>
+    <p>The other URLs bring up a Forbidden error:</p>
+      <img src="Images/Lab 9/forbidden.png" alt="img 3" class="center"/>
+    <p>And so the only other accessible URL is http://$IP/files which shows this:</p>
+      <img src="Images/Lab 9/files on webpage.png" alt="img 5" class="center"/>
+  <h3>Reverse Shell</h3>
+    <p>So far the files look the same as the ones I accessed through FTP. This makes me think the machine we have access to is the server for the web page and now I want to try uploading a file through FTP and see if it shows up on http://$IP/files. Since the FTP directory has all actions available (read/write/exe), I uploaded a test file and compared it with the URL directory.</p>
+      <img src="Images/Lab 9/add test file.png" alt="img 6" class="center"/>
+    <p>After seeing that the file was uploaded, this confirms that a reverse shell script could be uploaded to view more files. I am running Kali Linux which has some premade scripts I can use and just changed the IP variable to my local machine and the port to listen for the script’s output. If there aren’t any premade scripts on your machine there are plenty of scripts listed by <a href="https://pentestmonkey.net/tools/web-shells/php-reverse-shell" title="pentestmonkey" class="link">pentestmonkey</a> and other users of the internet. I found the php script the easiest to alter as it’s the same one provided by Kali Linux. </p>
+    <p>[NOTE: the php script in Kali is located in /usr/share/webshells/php/php-reverse-shell.php]</p>
+    <p>So I uploaded the reverse script to the server through FTP into the ftp directory:</p>
+      <code>put php-reverse-shell.php</code>
+      <img src="Images/Lab 9/adding php script.png" alt="img 7" class="center"/>
+    <p>Once uploaded, I started netcat in another terminal so it could capture the shell provided by the script as shown below:</p>
+      <img src="Images/Lab 9/reverse shell script results.png" alt="img 8" class="center"/>
+    <p>The first step would be to see the current directory and available files.</p>
+      <img src="Images/Lab 9/shell output for ls.png" alt="img 9" class="center"/>
+    <p>Immediately I see the file name recipe.txt and view the contents:</p>
+      <img src="Images/Lab 9/answer to q1.png" alt="img 10" class="center"/>
+    <p>What is the secret spicy soup recipe? LOVE</p>
+  
+<!-----------------------------------------Priv Esc/ Q2----------------------------------------->
+  <h3>Privilege Escalation</h3>
+  
+  <p>place holder</p>
+      <img src="Images/Lab 7/test.gif" alt="idk" class="center"/>
+    
+  <br>
+  <br>
+
+  <p><a href="index.html" title="Home" class="link">Back to Home</a></p>
+  
+</html>
