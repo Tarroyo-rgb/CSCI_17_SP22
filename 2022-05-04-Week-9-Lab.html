@@ -84,21 +84,22 @@
   <h3>Privilege Escalation [Root]</h3>
   
   <h2>Access Granted!</h2>
-    <p>Now to look at the other directories. So far we learn Lennie has a dog and for some reason wants to delete the incident logs, hmmmm. In the Scripts dir there’s a sh file and a txt file. The bash script simply prints the txt file which is a list, then runs another bash file (print.sh):</p>
-      <img src="Images/Lab 9/lennie login.png" alt="img 18" class="center"/>
+    <p>Now to look at the other directories. So far we learn Lennie has a dog and for some reason wants to delete the incident logs, hmmmm. In the Scripts dir there’s a .sh file and a .txt file. The bash script simply prints the txt file which is a list, then runs another bash file (print.sh):</p>
+      <img src="Images/Lab 9/planner script.png" alt="img 19" class="center"/>
   <h2>Bash Reverse Shell</h2>
     <p>Let’s open this print.sh file! It is essentially empty but we could write a script to gain root access. The file planner.sh is owned by root so we don’t have permission to alter it but we have permission to write on print.sh. So if we run planner.sh with a reverse shell script added to print.sh, it will open a shell for root since root owns the file.</p>
   <h2>Detour: Fully Functional Terminal</h2>
     <p>So I tried using nano to edit the file but it wasn’t working with an error of “unknown” which was very helpful. Just kidding it wasn’t but I realized that I didn’t allow shortcuts and auto completion when I started my current terminal which also allows the use of nano. So I put netcat in the background (CTRL+Z) and ran “stty raw -echo” on my local machine then brought back netcat with the “fg” cmd. I still wasn’t able to use nano but it’s still useful to perform the steps above for a fully functional terminal. So then I tried vi and it worked to alter the file with a bash reverse shell script:</p>
-      <img src="Images/Lab 9/lennie login.png" alt="img 18" class="center"/>
-  <h2></h2>
+      <img src="Images/Lab 9/bash reverse shell script.png" alt="img 20" class="center"/>
+  <h2>Ps.py</h2>
     <p>Now that I added the script I wasn’t sure how to execute planner.sh since I wasn’t root…. yet. So after some googling I noticed that looking up scheduled processes is common to look at for privilege escalation and a common tool to use is ps.py. This piqued my interest since the root script is labeled planner.sh and the list is labeled startup_list so it might be a scheduled task by root.</p>
     <p>I downloaded <a href="https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64" title="ps.py" class="link">ps.py</a> onto my local machine and used netcat to upload it to the target machine since it doesn’t have internet access to download directly. Since we aren’t root we need to write the tool to a place that is world-writable, or where everyone has permissions to write. Some common world-writable directories are /tmp and /var/tmp but a good “hacker” spot would be /dev/shm. This directory is backed by RAM so it allows fast access and guarantees that whatever you write is destroyed at reboot.</p>
     <p>So changing directories and enabling executable permissions for pspy64 we can launch it and see what tasks are scheduled:</p>
-      <img src="Images/Lab 9/lennie login.png" alt="img 18" class="center"/>
-    <p></p>
-    <p></p>
-      <img src="Images/Lab 9/lennie login.png" alt="img 18" class="center"/>
+      <img src="Images/Lab 9/pspy results.png" alt="img 21" class="center"/>
+    <p>Perfect! We can see that the planner script is executed every minute so we should be able to just open netcat to listen and have the root shell available.</p>
+  <h2>Root Access Granted!</h2>
+    <p>Now I ran netcat to listen on port 1234 again and waited about a minute and there it was, the root shell! And with minimal digging we find the last answer:</p>
+      <img src="Images/Lab 9/q3 answer.png" alt="img 22" class="center"/>
     <p>What are the contents of root.txt? THM{f963aaa6a430f210222158ae15c3d76d}</p>
     
   <br>
