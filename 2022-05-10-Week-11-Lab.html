@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<!--This is the title-->
+  <link rel=”stylesheet” href=”custom.css”>
+  <h1>WEEK 11 LAB: Snort [THM]</h1>
+  <p>Summary: SNORT is an open-source, rule-based Network Intrusion Detection and Prevention System (NIDS/NIPS). It was developed and still maintained by Martin Roesch, open-source contributors, and the Cisco Talos team. </p>
+
+  
+  <!-----------------------------------------Task 2----------------------------------------->
+  <h2>Task 2: Interactive Material and VM</h2>
+  
+    <p>First let’s start up our VM and we’ll see only a Task-Exercises Folder that we’ll be working with.  First we run ‘sudo ./traffic-generator.sh’ to see what the generated traffic would look like since the machine doesn’t have internet access. </p>
+    <p>Then for our first task we need to run ‘./.easy.sh’ and answer with the output:</p>
+      <img src="Images/Lab 11/[1] task 2 answer.png" alt="img 1" class="center"/>
+  <p>Navigate to the Task-Exercises folder and run the command ‘./.easy.sh’ and write the output:
+Too Easy!</p>
+  
+  
+<!-----------------------------------------Task 3----------------------------------------->
+  <h2>Task 3: Introduction to IDS/IPS</h2>
+  
+    <p>Now we get to learn about IDS and IPS. So far it’s a case of detection vs. prevention and each has different types.</p>
+    <p>IDS mostly uses a NIDS (Network Intrusion Detection System) which monitors all/most parts of the network or a HIDS (Host-based Intrusion Detection System) which monitors just from the host device and both create an alarm when an anomaly is discovered. </p>
+    <p>An IPS has four types: NIPS (Network Intrusion Prevention System), NBA (Network Behavior Analysis - Behavior-Based Intrusion Prevention System), WIPS (Wireless Intrusion Prevention System), and HIPS (Host-Based Intrusion Prevention System). These systems terminate the connection when an anomaly is detected. </p>
+    <p>Snort is able to be both NIDS/NIPS. </p>
+    <p>After reading the material provided we can answer the questions:</p>
+    <p>Which snort mode can help you stop the threats on a local machine? HIPS</p>
+    <p>Which snort mode can help you detect threats on a local network? NIDS</p>
+    <p>Which snort mode can help you detect the threats on a local machine? HIDS</p>
+    <p>Which snort mode can help you stop the threats on a local network? NIPS</p>
+    <p>Which snort mode works similar to NIPS mode? NBA</p>
+    <p>According to the official description of the snort, what kind of NIPS is it? Full-blown</p>
+    <p>NBA training period is also known as … baselining.</p>
+  
+  
+<!-----------------------------------------Task 4----------------------------------------->
+  <h2>Task 4: First Interaction with Snort</h2>
+  
+    <p>Here we learn some basic parameters for snort such as:</p>
+    <p>-V ; info about instance version</p>
+    <p>-c ; the config file</p>
+    <p>-T ; self-test</p>
+    <p>-q ; runs snort without default banner</p>
+    <p>We can use these parameters to find the answers to the questions.</p>
+    <p>[1] Run the Snort instance and check the build number: 149</p>
+    <p>[1] ~$ snort -V</p>
+    <p>[2] Test the current instance with “/etc/snort/snort.conf” file and check how many rules are loaded with the current build: 4151</p>
+    <p>[2] ~$ sudo snort -c /etc/snort/snort.conf -T</p>
+    <p>[2] Then scroll up to where it says ‘Rule Port Counts’ and right above it should list ‘# Snort rules read’</p>
+    <p>[3] Test the current instance with ‘/etc/snort/snortv2.conf’ file and check how many rules are loaded with the current build: 1</p>
+    <p>[3] Repeat steps in question 2 but snort.conf == snortv2.conf</p>
+  
+  
+<!-----------------------------------------Task 5----------------------------------------->
+  <h2>Task 5: Operation Mode 1: Sniffer Mode</h2>
+  
+    <p>In this task we learn about the parameters:</p>
+    <p>-v ; verbose displays the TCP/IP output in the console</p>
+    <p>-d ; displays the payload</p>
+    <p>-e ; displays link-layer headers</p>
+    <p>-X ; displays packet details in HEX</p>
+    <p>-i ; option for the which network interface to sniff</p>
+    <p>After learning about the options for Sniffer Mode, we’re told to just practice with the parameters and there’s no questions to answer to complete the task.</p>
+  
+  
+<!-----------------------------------------Task 6----------------------------------------->
+  <h2>Task 6: Operation Mode 2: Packet Logger Mode<h2>
+  
+    <p>Now let’s learn about logging with Snort. Snort can be used to create logs that we can then analyze later and there are some parameters to help:</p>
+    <p>-l ; makes a log file and can be given a location if you don’t want the logs put in /var/log/snort</p>
+    <p>-K ASCII ; logs in ASCII</p>
+    <p>-r ; reads the logs in Snort</p>
+    <p>-n ; number of packets to read</p>
+    <p>The creator of the room demonstrates each parameter and provides some resources to understand Berkeley Packet Filters (BPF). Now onto the activity for this task!</p>
+    <p>We first want to run snort with the cmd ‘sudo snort -dev -K ASCII -l .’ to have it listen to the traffic we will generate and create an ASCII readable log file in the present directory we are in. Then we start the traffic generator with ‘sudo ./traffic-generator.sh and select the third option ‘Task-6 Exercise’. Once finished we will have these files/folders generated:</p>
+      <img src="Images/Lab 11/[2] log files generated for task 6.png" alt="img 2" class="center"/>
+    <p>These files are owned and only have permissions for the root user so to access them I changed the owner of the directory to the the regular ubuntu user and added the -R parameter to recursively go through and change the owner as well:</p>
+    <p>sudo chown ubuntu -R /home/ubuntu/Desktop/Task-Exercises/Exercise-Files/TASK-6</p>
+    <p>Then once we open the ‘145.254.160.237’ folder we see some plaintext documents:</p>
+      <img src="Images/Lab 11/[3] q1 for task 6.png" alt="img 3" class="center"/>
+    <p>The format seems to provide the protocol used and some port numbers in order of source port and destination port like in a network packet.</p>
+    <p>What is the source port used to connect port 53? 3009</p>
+    <p>For the next question just run the cmd ‘snort -r snort.log.1640048004 -n 10’ to read the log file to the 10th packet and find the IP ID:</p>
+      <img src="Images/Lab 11/[4] IP ID found.png" alt="img 4" class="center"/>
+    <p>Read the snort.log file with Snort; what is the IP ID of the 10th packet? 49313</p>
+    <p>The next question asks for the referrer which is just an HTTP request header for a URL. So if we read the actual contents of the packet we should be able to find it. I’ll run the same command as before but add the -X parameter to help view more than just the link-layer header as the referrer is usually in the HEX details, and change the number of packets to 4.</p>
+    <p>‘snort -r snort.log.1640048004 -n 4 -X’</p>
+      <img src="Images/Lab 11/[5] referer url found.png" alt="img 5" class="center"/>
+    <p>Read the “snort.log.1640048004” file with Snort; what is the referrer of the 4th packet? http://www.ethereal.com/development.html</p>
+    <p>For the next question the ACK number should just be available when Snort reads the file:</p>
+      <img src="Images/Lab 11/[6] ack num found.png" alt="img 6" class="center"/>
+    <p>Read the "snort.log.1640048004" file with Snort; what is the Ack number of the 8th packet? 0x38AFFFF3</p>
+    <p>We can find all TCP packets by running ‘snort -r snort.log.1640048004 tcp’.</p>
+      <img src="Images/Lab 11/[7] tcp packets found.png" alt="img 7" class="center"/>
+    <p>Read the "snort.log.1640048004" file with Snort; what is the number of the "TCP port 80" packets? 41</p>
+    
+    
+<!-----------------------------------------Task 7----------------------------------------->
+  <h2>Task 7: Operation Mode 3: IDS/IPS</h2>
+    
+    <p>This task summarizes the IDS/IPS modes and how to test the Snort .conf file to mitigate any misconfigurations. Then we learn about the different alert modes: console, cmg, full, fast, and none. Full, fast, and none modes are only readable in logs as there is no console output. </p>
+    <p>Console mode provides simplified alerts with date, protocol and src/dest IP, and generates them based on the rules in the .conf file. CMG mode is more akin to a packet read in wireshark with a brief header and packet details shown in hexadecimal format. Fast mode is similar to console mode but with no console output and is viewed in a log file. Full mode is like Fast mode but with more information such as TTL, ID, IPLEN, etc. None mode simply makes a log file.</p>
+    <p>The task also goes over how to run without a configuration file and the -Q – daq afpacket parameter to drop/block packets.</p>
+    <p>Now we’re moving on to the questions for this task. The first thing we do is generate the traffic for Task 7 and use full mode to create an alert file. So far we just need to find the amount of HTTP GET methods which can be found in the ‘HTTP Inspect’ section of Snort summary:</p>
+      <img src="Images/Lab 11/[8] http get found.png" alt="img 8" class="center"/>
+    <p>What is the number of the detected HTTP GET methods? 2</p>
+    <p>After practicing with the other modes/parameters we continue to the next task.</p>
+    
+    
+<!-----------------------------------------Task 8----------------------------------------->
+  <h2>Task 8: Operation Mode 4: PCAP Investigation</h2>
+    
+    <p>Snort is already so useful but there is a PCAP mode as well that helps us analyze packets even more! These parameters are:</p>
+    <p>-r / –pcap-single= ; to read a single pcap file</p>
+    <p>–pcap-list=”” ; reads specified pcaps in command prompt</p>
+    <p>–pcap-show ; shows pcap name while processing</p>
+    <p> Let’s put these parameters into practice. We’ll first read the mx-1.pcap file and answer some questions as we read through it.</p>
+    <p>For question 1 look to the ‘Action Stats’ section to find the answer.</p>
+      <img src="Images/Lab 11/[9] alerts.png" alt="img 9" class="center"/>
+    <p>What is the number of the generated alerts? 170</p>
+    <p>Next look in the ‘Stream Statistics’ section to find the answer for question 2.</p>
+      <img src="Images/Lab 11/[10] tcp seg.png" alt="img 10" class="center"/>
+    <p>How many TCP Segments are Queued? 18</p>
+    <p>The section below should hold the next answer.</p>
+      <img src="Images/Lab 11/[11] http response.png" alt="img 11" class="center"/>
+    <p>How many “HTTP response headers” were extracted? 3</p>
+    <p>After running the .pcap file with the second configuration file we can see how it differs for the next question.</p>
+      <img src="Images/Lab 11/[12] second conf alerts.png" alt="img 12" class="center"/>
+    <p>What is the number of generated alerts? 68</p>
+    <p>Then we investigate the next .pcap file, mx-2.pcap, and look at the alerts generated.</p>
+      <img src="Images/Lab 11/[13] mx-2 alerts.png" alt="img 13" class="center"/>
+      <img src="Images/Lab 11/[14] tcp packets found.png" alt="img 14" class="center"/>
+    <p>What is the number of the generated alerts? 340</p>
+    <p>What is the number of the detected TCP packets? 82</p>
+    <p>Now we’ll investigate both the second and third .pcap files [mx-2.pcap, mx-3.pcap].</p>
+      <img src="Images/Lab 11/[15] pcap 2-3 alerts.png" alt="img 15" class="center"/>
+    <p>What is the number of generated alerts? 1020</p>
+    
+    
+<!-----------------------------------------Task 9----------------------------------------->
+  <h2>Task 9: Snort Rule Structure</h2>
+    
+    <p>Let’s learn about rules in Snort! To quote the creator of the THM room, “Each rule should have a type of action, protocol, source and destination IP, source and destination port and an option.” For the type of action we’ll learn about ‘alert’ for IDS mode and ‘reject’ for IPS mode. Snort only supports IP, TCP, UDP and ICMP for the type of protocol in a rule and when providing a port or IP at least one has to be provided to know where to look. To view all the rule options refer to the reading material for this task as it goes over general, payload, and non-payload rule options.</p>
+    <p>All rules that are created should be put into /etc/snort/rules/local.rules and a method of editing the local.rules file is to run the cmd ‘sudo gedit /etc/snort/rules/local.rules’.</p>
+    <p>After getting a basic rundown of Snort rules, let’s begin answering the questions and putting this new skill to practice. First, we need to make a rule to filter the IP ID 35369 for this task’s .pcap file.</p>
+    <p>I created the following rules for this purpose:</p>
+    <p>alert tcp any any <> any any (msg: "IP ID Found"; id:35369; sid: 1000001; rev:1;)</p>
+    <p>alert udp any any <> any any (msg: "IP ID Found"; id:35369; sid: 1000002; rev:1;)</p>
+    <p>alert icmp any any <> any any (msg: "IP ID Found"; id:35369; sid: 1000003; rev:1;)</p>
+    <p>These rules will check any packets using the TCP, UDP, or ICMP protocols on any given IP/port and show a message of ‘IP ID Found’ if the packet info has an IP ID of 35369. The SID and rev options specify that it is a user created rule as the SID is greater than 1,000,000 and that it’s only been revised once on initial creation. If the rule is modified again then the rev option would increase by one each time. Also a good thing to note is that if we already have a rule with an SID of 1000001 it cannot be the same.</p>
+    <p>After running snort with this rule set it found an icmp packet with that IP ID:</p>
+      <img src="Images/Lab 11/[16] ip id found.png" alt="img 16" class="center"/>
+    <p>What is the request name of the detected packet? TIMESTAMP REQUEST</p>
+    <p>Now we have to make a rule to filter how many packets have the SYN flag:</p>
+    <p>alert tcp any any <> any any (msg: "SYN Flag Found"; flags: S; sid: 1000001; rev: 1;)</p>
+    <p>I’m focusing on TCP for my rule’s protocol this time since UDP and ICMP don’t use flags as they are unreliable protocols. I also am using the flags option since we want to see how many packets contain the SYN flag. After running snort with the new rule we see just how many packets there are:</p>    
+      <img src="Images/Lab 11/[17] syn flag found.png" alt="img 17" class="center"/>
+    <p>What is the request name of the detected packets? 1</p>
+    <p>Now we want to see how many packets have PUSH + ACK flags:</p>
+    <p>alert tcp any any <> any any (msg: "PSH+ACK Flag Found"; flags: P, A; sid: 1000001; rev: 1;)</p>
+    <p>This time I just changed the flags we’re looking for and ran Snort:</p>
+      <img src="Images/Lab 11/[18] psh-ack flags.png" alt="img 18" class="center"/>
+    <p>What is the number of detected packets? 216</p>
+    <p>The next question needs us to create a rule to detect packets with the same source and destination IP:</p>
+    <p>alert tcp any any <> any any (msg: "Same IP Found"; sameip; sid: 1000001; rev: 1;)</p>
+    <p>alert udp any any <> any any (msg: "Same IP Found"; sameip; sid: 1000002; rev: 1;)</p>
+    <p>This should look at the IP of all TCP and UDP packets (since this protocol requires a src/dest. IP) and see if there are any duplicates (AKA same source/dest. IP) with the sameip option:</p>
+      <img src="Images/Lab 11/[19] duplicate ip.png" alt="img 19" class="center"/>
+    <p>What is the number of detected packets? 10</p>
+    <p>The last question can be answered from the reading.</p>
+    <p>Case Example - An analyst modified an existing rule successfully. Which rule option must the analyst change after the implementation? rev</p>
+    
+    
+<!-----------------------------------------Task 10----------------------------------------->
+  <h2>Task 10: Snort2 Operation Logic: Points to Remember</h2>
+    <p>This part goes over Snort’s main components, types of rules, and the main and user-generated configuration files along with explanations on their different sections that can be modified. </p>
+    
+    
+<!-----------------------------------------Task 11----------------------------------------->
+  <h2>Task 11: Conclusion</h2>
+    <p>We have now completed the Snort THM room and they even provided a Snort cheatsheet as we continue learning about this incredibly useful tool!</p>
+
+  
+  <br>
+  <br>
+
+  <p><a href="index.html" title="Home" class="link">Back to Home</a></p>
+  
+</html>
