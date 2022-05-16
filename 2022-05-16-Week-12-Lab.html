@@ -17,9 +17,9 @@
     <h2>Task 1: Deploy the Vulnerable Machine</h2>
     <p>So we need to start an attack box or vm instance and gain access to the target machine which we’ve been provided with the IP.</p>
     <p>Let’s start by running nmap to see what ports are open and what actions are available for us to move forward, while also answering the questions. </p>
-    <p>I ran ‘nmap -T4 -A $TARGET_IP’ to get the following results:</p>
+    <p>I ran <code class='language-shellsession'>nmap -T4 -A $TARGET_IP</code> to get the following results:</p>
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
-    <p>For a more condensed version run ‘nmap -T4 $TARGET_IP’.</p>
+    <p>For a more condensed version run <code class='language-shellsession'>nmap -T4 $TARGET_IP</code>’.</p>
     <p>How many ports are open? 7</p>
     
     
@@ -29,18 +29,18 @@
     
     <p>Samba is a suite of programs that allows Linux/Unix systems to communicate with Windows machines for access to files and other shared resources. This application suite can be enumerated or manipulated to grant access, so that’s exactly what we are going to do here (specifically with an already created script available with nmap.)</p>
     <p>I ran the provided command which runs the pre-made script on port 445 which is one of the two ports Samba uses:</p>
-    <pre><code class='language-bash'>nmap -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse $TARGET_IP</code></pre>
+    <pre><code class='language-shellsession'>nmap -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse $TARGET_IP</code></pre>
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
     <p>Using the nmap command above, how many shares have been found? 3</p>
     <p>Next, we’ll connect to the machine’s network shares through smbclient which works similarly to ftp.</p>
-    <p>We’ll use the anonymous username to connect: <code class='language-bash'>smbclient //$TARGET_IP/anonymous</code>. This will prompt for a password which is the same as the anonymous login when connecting with ftp. We’ll list the files and see only one text file:</p>
+    <p>We’ll use the anonymous username to connect: <code class='language-shellsession'>smbclient //$TARGET_IP/anonymous</code>. This will prompt for a password which is the same as the anonymous login when connecting with ftp. We’ll list the files and see only one text file:</p>
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
     <p>Once you're connected, list the files on the share. What is the file can you see? log.txt</p>
-    <p>The file seems to hold some information when analyzed and holds both an SSH key location and information on the ProFTPD Server they use. We can decide to download the file with the cmd: <code class='language-bash'>smbget -R smb://$TARGET_IP/anonymous</code>. Or we can also use the more cmd while still connected with smbclient.</p>
+    <p>The file seems to hold some information when analyzed and holds both an SSH key location and information on the ProFTPD Server they use. We can decide to download the file with the cmd: <code class='language-shellsession'>smbget -R smb://$TARGET_IP/anonymous</code>. Or we can also use the more cmd while still connected with smbclient.</p>
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
     <p>What port is FTP running on? 21</p>
     <p>Our attention is being drawn to port 111 which runs the rpcbind service. Apparently, there are scripts to enumerate this service as well as it can commonly be used to get access to network file systems. The following command will run a script for that purpose:</p>
-    <pre><code class='language-bash'>nmap -p 111 –script=nfs-ls, nfs-statfs, nfs-showmount $HOST_IP</code></pre>
+    <pre><code class='language-shellsession'>nmap -p 111 –script=nfs-ls, nfs-statfs, nfs-showmount $HOST_IP</code></pre>
     <p>We can see which mount is available to us, the files within it and even how much space they take up:</p>
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
     <p>What mount can we see? /var</p>
@@ -54,24 +54,24 @@
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
     <p>What is the version? 1.3.5</p>
     <p>We can find exploits for this service and specifically the version we just found by using searchsploit.</p>
-    <p>Let’s run the following cmd which calls searchsploit, the service/application we want to find exploits for, and the version of the service/application: <code class='language-bash'>searchsploit proftpd 1.3.5</code></p>
+    <p>Let’s run the following cmd which calls searchsploit, the service/application we want to find exploits for, and the version of the service/application: <code class='language-shellsession'>searchsploit proftpd 1.3.5</code></p>
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
     <p>We only see three results but THM doesn’t seem to like that answer for the next question, but if we look on exploit-db we find 4 results which is the right answer:</p>
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
     <p>How many exploits are there for the ProFTPd running? 4</p>
     <p>The room points out that ProFTPd has an exploit for the mod_copy module that can copy all files/directories to a chosen destination and since we found a user’s SSH key we can use the exploit to copy it. </p>
-    <p>We’ll connect with netcat through the port used for ProFTPd: <code class='language-bash'>nc $TARGET_IP 21</code></p>
+    <p>We’ll connect with netcat through the port used for ProFTPd: <code class='language-shellsession'>nc $TARGET_IP 21</code></p>
     <p>Once we’ve connected we can use the SITE CPFR and SITE CPTO commands as we know the location of the SSH key from the log.txt file and knowing we have access to the /var/tmp directory we can move it there.</p>
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
     <p>[There are two questions that need no answer after learning this information and copying the key. Complete and continue.</p>
     <p>To mount the /var/tmp directory we’ll follow the commands provided by the THM room:</p>
-    <pre><code class='language-bash'>
+    <pre><code class='language-shellsession'>
     mkdir /mnt/kenobiNFS
     mount $TARGET_IP:/var /mnt/kenobiNFS
     ls -la /mnt/kenobiNFS
     </code></pre>
     <p>Now that we can see all the files and directories of the target machine, we can access the SSH key to use. We are also provided some helpful commands to copy the file, allow permissions for us to use and connect through SSH:</p>
-    <pre><code class='language-bash'>
+    <pre><code class='language-shellsession'>
     cp /mnt/kenobiNFS/tmp/id_rsa .
     sudo chmod 600 id_rsa
     ssh -i id_rsa kenobi@$TARGET_IP
@@ -86,7 +86,29 @@
 <!-----------------------------------------Task 4----------------------------------------->
 
     <h2>Task 4: Privilege Escalation with Path Variable Manipulation</h2>
-  
+    <p>This task focuses on SUID, SGID, and sticky bits. SUID/SGID is enabled by adding the sticky bit to either the user or group permissions (or both) and allows any user to run a file as the user or group who owns it. So if the SUID or SGID bit is enabled on a file that is owned by root then anyone would be able to run that file as root as it will  always run with the file owner’s permissions. These files/executables can be identified by seeing the permissions when using <code class='language-shellsession'>ls -l</code> and seeing the sticky bit, or even just using the <code class='language-shellsession'>ls</code> command as any SUID/SGID file will show as highlighted in red. While these are methods of viewing files with the SUID or SGID bit, an easier way is by running the following command:</p>
+    <pre><code class='language-shellsession'>find / -perm -u=s -type f 2>/dev/null</code></pre>
+    <p>This will find all files <code class='language-shellsession'>-type f</code> in the root folder <code class='language-shellsession'>/</code> where the user permissions are set to the sticky bit <code class='language-shellsession'>-perm -u=s</code>, or in other words have SUID enabled. The last part <code class='language-shellsession'>2>/dev/null</code> sends all errors to the /dev/null file which acts as a trash can (A.K.A. bit bucket), since anything written to it will be discarded.</p>
+    <p>Running that in our SSH connection we see these files with the SUID bit:</p>
+    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <p>It’s common to have /passwd, /sudo, /ping, and /su with SUID permissions but for any others I wasn’t 100% sure on their validity for having such permissions. To see if there was anything out of the ordinary I searched for what my host machine had with SUID permissions:</p>
+    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <p>After comparing it seems that the only difference is that the target machine has /usr/bin/menu.</p>
+    <p>What file looks particularly out of the ordinary? /usr/bin/menu</p>
+    <p>Next we want to run the binary which is just running the command ‘menu’ as shown:</p>
+    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <p>Unsurprisingly, this provides a menu with some options.</p>
+    <p>Run the binary, how many options appear? 3</p>
+    <p>To get a better understanding of what the binary is doing we can run the strings command to view the code. Our focus here would be on the line where the curl command is called upon. A full path isn’t used which is important to note since this means when the file calls on curl it will have to use the environment path variable. That variable can be edited by anyone which is what we’ll do so we can create a root shell. </p>
+    <p>We’ll first copy the /bin/sh shell and call it curl, change the permissions, put the location of it in our path variable, run the menu file, and use the id command to check what user we are:</p>
+    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <p>We are now running a root shell! [No answer needed for next question. Complete and continue.]</p>
+    <p>There should be a root.txt file so let’s take a look:</p>
+    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <p>What is the root flag (/root/root.txt)? 177b3cd8562289f37382721c28381f02</p>
+    
+    <p>Room Completed!!</p>
+    
   <br>
   <br>
 
