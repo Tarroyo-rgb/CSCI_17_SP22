@@ -30,7 +30,7 @@
     <p>Samba is a suite of programs that allows Linux/Unix systems to communicate with Windows machines for access to files and other shared resources. This application suite can be enumerated or manipulated to grant access, so that’s exactly what we are going to do here (specifically with an already created script available with nmap.)</p>
     <p>I ran the provided command which runs the pre-made script on port 445 which is one of the two ports Samba uses:</p>
     <pre><code class='language-shellsession'>nmap -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse $TARGET_IP</code></pre>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[2] users.png" alt="img 2" class="center"/>
     <p>Using the nmap command above, how many shares have been found? 3</p>
     <p>Next, we’ll connect to the machine’s network shares through smbclient which works similarly to ftp.</p>
     <p>We’ll use the anonymous username to connect: <code class='language-shellsession'>smbclient //$TARGET_IP/anonymous</code>. This will prompt for a password which is the same as the anonymous login when connecting with ftp. We’ll list the files and see only one text file:</p>
@@ -107,6 +107,7 @@
     <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
     <p>What is the root flag (/root/root.txt)? 177b3cd8562289f37382721c28381f02</p>
     
+    <br>
     <p>Room Completed!!</p>
     
   <br>
