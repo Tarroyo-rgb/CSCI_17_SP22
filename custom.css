@@ -33,11 +33,11 @@ mark2 {
   color: black;
 }
 
-.answer {
-  color: #88f326;
+.hide {
   display: none;
 }
   
-div.answer:hover {
+.showdiv:hover + .hide {
   display: block;
+  color: #88f326;
 }
