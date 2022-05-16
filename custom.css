@@ -37,7 +37,7 @@ mark2 {
   display: none;
 }
   
-.showdiv:hover + .hide {
+.myDiv:hover + .hide {
   display: block;
   color: #88f326;
 }
