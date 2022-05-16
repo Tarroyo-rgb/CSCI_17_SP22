@@ -32,3 +32,12 @@ mark2 {
   background-color: #90EE90;
   color: black;
 }
+
+.answer {
+  color: #88f326;
+  display: none;
+}
+  
+div.answer:hover {
+  display: block;
+}
