@@ -55,14 +55,14 @@
     <p>What is the version? 1.3.5</p>
     <p>We can find exploits for this service and specifically the version we just found by using searchsploit.</p>
     <p>Let’s run the following cmd which calls searchsploit, the service/application we want to find exploits for, and the version of the service/application: <code class='language-shellsession'>searchsploit proftpd 1.3.5</code></p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[7] searchsploit.png" alt="img 7" class="center"/>
     <p>We only see three results but THM doesn’t seem to like that answer for the next question, but if we look on exploit-db we find 4 results which is the right answer:</p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[8] exploit-db.png" alt="img 8" class="center"/>
     <p>How many exploits are there for the ProFTPd running? 4</p>
     <p>The room points out that ProFTPd has an exploit for the mod_copy module that can copy all files/directories to a chosen destination and since we found a user’s SSH key we can use the exploit to copy it. </p>
     <p>We’ll connect with netcat through the port used for ProFTPd: <code class='language-shellsession'>nc $TARGET_IP 21</code></p>
     <p>Once we’ve connected we can use the SITE CPFR and SITE CPTO commands as we know the location of the SSH key from the log.txt file and knowing we have access to the /var/tmp directory we can move it there.</p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[9] getting ssh key.png" alt="img 9" class="center"/>
     <p>[There are two questions that need no answer after learning this information and copying the key. Complete and continue.</p>
     <p>To mount the /var/tmp directory we’ll follow the commands provided by the THM room:</p>
     <pre><code class='language-shellsession'>
@@ -77,9 +77,9 @@
     ssh -i id_rsa kenobi@$TARGET_IP
     </code></pre>
     <p>The image below shows the previous three commands as well as showing our connection:</p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[10] ssh connection.png" alt="img 10" class="center"/>
     <p>After roaming the files real quick we find the user.txt and the flag for the question:</p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[11] flag found.png" alt="img 11" class="center"/>
     <p>What is Kenobi’s user flag (/home/kenobi/user.txt)? D0b0f3f53b6caa532a83915e19224899</p>
     
     
@@ -90,21 +90,21 @@
     <pre><code class='language-shellsession'>find / -perm -u=s -type f 2>/dev/null</code></pre>
     <p>This will find all files <code class='language-shellsession'>-type f</code> in the root folder <code class='language-shellsession'>/</code> where the user permissions are set to the sticky bit <code class='language-shellsession'>-perm -u=s</code>, or in other words have SUID enabled. The last part <code class='language-shellsession'>2>/dev/null</code> sends all errors to the /dev/null file which acts as a trash can (A.K.A. bit bucket), since anything written to it will be discarded.</p>
     <p>Running that in our SSH connection we see these files with the SUID bit:</p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[12] suid.png" alt="img 12" class="center"/>
     <p>It’s common to have /passwd, /sudo, /ping, and /su with SUID permissions but for any others I wasn’t 100% sure on their validity for having such permissions. To see if there was anything out of the ordinary I searched for what my host machine had with SUID permissions:</p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[13] host suid.png" alt="img 13" class="center"/>
     <p>After comparing it seems that the only difference is that the target machine has /usr/bin/menu.</p>
     <p>What file looks particularly out of the ordinary? /usr/bin/menu</p>
     <p>Next we want to run the binary which is just running the command ‘menu’ as shown:</p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[14] menu.png" alt="img 14" class="center"/>
     <p>Unsurprisingly, this provides a menu with some options.</p>
     <p>Run the binary, how many options appear? 3</p>
     <p>To get a better understanding of what the binary is doing we can run the strings command to view the code. Our focus here would be on the line where the curl command is called upon. A full path isn’t used which is important to note since this means when the file calls on curl it will have to use the environment path variable. That variable can be edited by anyone which is what we’ll do so we can create a root shell. </p>
     <p>We’ll first copy the /bin/sh shell and call it curl, change the permissions, put the location of it in our path variable, run the menu file, and use the id command to check what user we are:</p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[15] root shell.png" alt="img 15" class="center"/>
     <p>We are now running a root shell! [No answer needed for next question. Complete and continue.]</p>
     <p>There should be a root.txt file so let’s take a look:</p>
-    <img src="Images/Lab 12/[1] nmap results.png" alt="img 1" class="center"/>
+    <img src="Images/Lab 12/[16] root flag.png" alt="img 16" class="center"/>
     <p>What is the root flag (/root/root.txt)? 177b3cd8562289f37382721c28381f02</p>
     
     <br>
