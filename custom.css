@@ -33,10 +33,13 @@ mark2 {
   color: black;
 }
 
-.hide {
-  display: none;
+.myDIV {
   font-family: Courier;
   color: #e5e6e8;
+}
+
+.hide {
+  display: none;
 }
   
 .myDIV:hover + .hide {
