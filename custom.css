@@ -35,9 +35,12 @@ mark2 {
 
 .hide {
   display: none;
+  font-family: Courier;
+  color: #e5e6e8;
 }
   
 .myDIV:hover + .hide {
   display: block;
+  font-family: Courier;
   color: #88f326;
 }
